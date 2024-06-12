@@ -1,3 +1,5 @@
+const Tour = require('../models/tourModel');
+
 exports.getAllTours = (req, res) => {
   try {
     res.status(200).json({

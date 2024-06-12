@@ -20,9 +20,10 @@ mongoose
     useCreateIndex: true,
     useFindAndModify: false,
   })
-  .then((connectionObj) =>
-    console.log(`Db Connection is Successfull`, connectionObj),
-  )
+  .then((connectionObj) => {
+    console.log(`Db Connection is Successfull`);
+    // console.log(connectionObj);
+  })
   .catch((err) => console.log(err));
 
 const PORT = process.env.PORT || 3000;
