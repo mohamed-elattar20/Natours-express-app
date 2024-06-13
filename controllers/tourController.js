@@ -20,7 +20,6 @@ exports.createTour = async (req, res) => {
     const newTour = await Tour.create(req.body);
     res.status(201).json({
       status: 'success',
-      results: 10,
       data: {
         tour: newTour,
       },
@@ -28,7 +27,8 @@ exports.createTour = async (req, res) => {
   } catch (error) {
     res.status(400).json({
       status: 'fail',
-      message: 'error ( Invalid Data Sent )',
+      message: error,
+      // message: 'error ( Invalid Data Sent )',
     });
   }
 };
@@ -37,7 +37,6 @@ exports.getTourById = async (req, res) => {
     const tour = await Tour.findById(req.params.id);
     res.status(200).json({
       status: 'success',
-      results: 10,
       data: { tour },
     });
   } catch (error) {
@@ -55,7 +54,6 @@ exports.updateTour = async (req, res) => {
     });
     res.status(200).json({
       status: 'success',
-      results: 10,
       data: {
         updatedTour,
       },
