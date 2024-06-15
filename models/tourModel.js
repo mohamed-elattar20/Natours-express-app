@@ -45,6 +45,7 @@ const tourSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now(),
+    select: false, // to not to send it back with the response as i want the user not to see it
   },
   startDates: [Date],
 });
