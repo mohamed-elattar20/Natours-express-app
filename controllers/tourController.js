@@ -1,6 +1,7 @@
 const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
 
+// Middleware to get the top 5 cheapest tours
 exports.aliasTopToursMiddleware = (req, res, next) => {
   req.query.limit = '5';
   req.query.sort = '-ratingsAverage';
@@ -12,8 +13,8 @@ exports.getAllTours = async (req, res) => {
   try {
     // 2. Excute the Query
     const features = new APIFeatures(
-      /*query Object*/ Tour.find(),
-      /*query string*/ req.query,
+      /*query Object === this.query*/ Tour.find(),
+      /*query string === this.queryString*/ req.query,
     )
       .filter()
       .sort()
@@ -95,6 +96,54 @@ exports.deleteTour = async (req, res) => {
     res.status(404).json({
       status: 'failed',
       message: 'err',
+    });
+  }
+};
+
+exports.getTourStats = async (req, res) => {
+  try {
+    const stats = await Tour.aggregate([
+      {
+        $match: { ratingsAverage: { $gte: 4.5 } },
+      },
+      {
+        $group: {
+          _id: null,
+          // _id: '$ratingsAverage',
+          // _id: '$difficulty',
+          numTours: { $sum: 1 },
+          numRatings: { $sum: '$ratingsQuantity' },
+          avgRating: { $avg: '$ratingsAverage' },
+          avgPrice: { $avg: '$price' },
+          minPrice: { $min: '$price' },
+          maxPrice: { $max: '$price' },
+        },
+      },
+      { $sort: { avgPrice: 1 } },
+      // { $match: { _id: { $ne: 'EASY' } } },  //We Can repeat the cycle of stages again
+    ]);
+
+    res.status(204).json({
+      status: 'success',
+      data: stats,
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: 'failed',
+      message: error,
+    });
+  }
+};
+exports.getMonthlyPlan = async (req, res) => {
+  try {
+    res.status(204).json({
+      status: 'success',
+      data: null,
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: 'failed',
+      message: error,
     });
   }
 };
