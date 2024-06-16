@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+// eslint-disable-next-line import/no-extraneous-dependencies
+const slugify = require('slugify');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -9,6 +11,7 @@ const tourSchema = new mongoose.Schema(
       unique: true,
       trim: true, // only works For a string
     },
+    slug: String,
     duration: {
       type: Number,
       required: [true, 'A tour must have a duration'],
@@ -34,7 +37,8 @@ const tourSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      required: [true, 'A tour must have a description'],
+      trim: true,
+      // required: [true, 'A tour must have a description'],
     },
     imageCover: {
       type: String,
@@ -59,6 +63,23 @@ const tourSchema = new mongoose.Schema(
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
+
+// Document Middleware : runs before .svae() , .create() but not .insertMany()
+tourSchema.pre('save', function (next) {
+  // console.log(this);
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+//if we don't use "this variable" then we use arrow function as per prettier
+// tourSchema.pre('save', (next) => {
+//   console.log(`will save doc ...`);
+//   next();
+// });
+
+// tourSchema.post('save', (doc, next) => {
+//   console.log(doc);
+//   next();
+// });
 
 const Tour = mongoose.model('Tour', tourSchema);
 
