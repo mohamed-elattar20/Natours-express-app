@@ -38,9 +38,9 @@ class APIFeatures {
     if (this.queryString.fields) {
       const fields = this.queryString.fields.split(',').join(' ');
       // query = query.select('name duration price difficulty');
-      this.query = this.query.select(fields);
+      this.query = this.query.select(fields); // this will return only the selected fields
     } else {
-      this.query = this.query.select('-__v');
+      this.query = this.query.select('-__v'); // this will return all the fields except "__v"
     }
     return this;
   }
