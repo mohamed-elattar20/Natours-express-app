@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const slugify = require('slugify');
-const validator = require('validator');
+// const validator = require('validator');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -91,7 +91,7 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
-///////// DOCUMENT MIDDLEWARE : runs before .svae() , .create() but not .insertMany()
+///////// DOCUMENT MIDDLEWARE : runs before .save() , .create() but not .insertMany()
 tourSchema.pre('save', function (next) {
   // console.log(this);
   this.slug = slugify(this.name, { lower: true });
