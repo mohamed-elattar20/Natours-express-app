@@ -1,3 +1,4 @@
+//  For operational errors Creation
 class AppError extends Error {
   constructor(message, statusCode) {
     super(message);
