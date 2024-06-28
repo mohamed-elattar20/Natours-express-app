@@ -46,9 +46,9 @@ const tourSchema = new mongoose.Schema(
     priceDiscout: {
       type: Number,
       validate: {
-        validator: function (val) {
+        validator: function (priceDiscountVal) {
           // this keyword only points to current doc on new doc creation
-          return val < this.price;
+          return priceDiscountVal < this.price;
         },
         message: 'Discount price ({VALUE}) must be less than regular price',
       },
