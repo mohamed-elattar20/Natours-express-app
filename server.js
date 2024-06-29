@@ -7,7 +7,7 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
-const result = dotenv.config({}); // empty object means that it will read from the .env file directly
+/*const result =*/ dotenv.config({}); // empty object means that it will read from the .env file directly
 // const result = dotenv.config({ path: './config.env' });
 
 const app = require('./app');

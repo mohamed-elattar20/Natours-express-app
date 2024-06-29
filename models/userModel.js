@@ -35,6 +35,9 @@ const userSchema = new mongoose.Schema({
     },
   },
   photo: String,
+  passwordChangedAt: {
+    type: Date,
+  },
 });
 
 userSchema.pre('save', async function (next) {
@@ -45,12 +48,25 @@ userSchema.pre('save', async function (next) {
   this.passwordConfirm = undefined;
   next();
 });
-
+// Instance methods : are methods that is gonna be available on all docs of the collection
 userSchema.methods.isCorrectPassword = async function (
   inputPassword,
   userPassword,
 ) {
-  return await bcrypt.compare(inputPassword, userPassword);
+  return await bcrypt.compare(inputPassword, userPassword); // returns true or false
+};
+
+userSchema.methods.changedPasswordAfter = function (jwtTimestamp) {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10,
+    );
+
+    // console.log(changedTimestamp, jwtTimestamp);
+    return jwtTimestamp < changedTimestamp;
+  }
+  return false;
 };
 
 const User = mongoose.model('User', userSchema);
