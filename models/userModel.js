@@ -16,6 +16,11 @@ const userSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
   },
+  role: {
+    type: String,
+    enum: ['user', 'guide', 'lead-guide', 'admin'],
+    default: 'user',
+  },
   password: {
     type: String,
     required: [true, 'Please provide a password'],
@@ -35,9 +40,7 @@ const userSchema = new mongoose.Schema({
     },
   },
   photo: String,
-  passwordChangedAt: {
-    type: Date,
-  },
+  // passwordChangedAt: Date,
 });
 
 userSchema.pre('save', async function (next) {
@@ -45,7 +48,7 @@ userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
 
   this.password = await bcrypt.hash(this.password, 12);
-  this.passwordConfirm = undefined;
+  this.passwordConfirm = undefined; // to not to save it in DB as we do only neec it for validation
   next();
 });
 // Instance methods : are methods that is gonna be available on all docs of the collection
@@ -56,7 +59,7 @@ userSchema.methods.isCorrectPassword = async function (
   return await bcrypt.compare(inputPassword, userPassword); // returns true or false
 };
 
-userSchema.methods.changedPasswordAfter = function (jwtTimestamp) {
+userSchema.methods.changedPasswordAfterTokenWasSent = function (jwtTimestamp) {
   if (this.passwordChangedAt) {
     const changedTimestamp = parseInt(
       this.passwordChangedAt.getTime() / 1000,

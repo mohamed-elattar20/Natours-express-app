@@ -16,7 +16,8 @@ exports.signup = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
-    passwordChangedAt: req.body.passwordChangedAt,
+    role: req.body.role,
+    // passwordChangedAt: req.body.passwordChangedAt,
   });
 
   const token = signToken(newUser._id);
@@ -88,7 +89,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     );
   // 4) Check if user changed password after the jwt token was issued
 
-  if (currentUser.changedPasswordAfter(decoded.iat)) {
+  if (currentUser.changedPasswordAfterTokenWasSent(decoded.iat)) {
     return next(
       new AppError('User recently Changed password! Please log in again', 401),
     );
@@ -98,3 +99,18 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+// eslint-disable-next-line arrow-body-style
+exports.restrictTo = (...userRoles) => {
+  return (req, res, next) => {
+    if (!userRoles.includes(req.user.role /* from line 99 in the above*/)) {
+      return next(
+        new AppError(
+          "you don't have permission to perform this action",
+          403 /*means forbidden*/,
+        ),
+      );
+    }
+    next();
+  };
+};
