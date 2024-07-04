@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const crypto = require('crypto');
 const validator = require('validator');
 
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -40,6 +41,8 @@ const userSchema = new mongoose.Schema({
     },
   },
   photo: String,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
   // passwordChangedAt: Date,
 });
 
@@ -52,13 +55,30 @@ userSchema.pre('save', async function (next) {
   next();
 });
 // Instance methods : are methods that is gonna be available on all docs of the collection
+// to check the password for the login functionality
 userSchema.methods.isCorrectPassword = async function (
   inputPassword,
   userPassword,
 ) {
   return await bcrypt.compare(inputPassword, userPassword); // returns true or false
 };
+// to create a reset password random token
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
 
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  console.log({ resetToken }, this.passwordResetToken);
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
+};
+
+//  to check if the password has been changed after the token was issued
 userSchema.methods.changedPasswordAfterTokenWasSent = function (jwtTimestamp) {
   if (this.passwordChangedAt) {
     const changedTimestamp = parseInt(
