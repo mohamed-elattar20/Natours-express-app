@@ -31,7 +31,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     role: req.body.role,
-    passwordCurrent: req.body.passwordCurrent,
+    // passwordCurrent: req.body.passwordCurrent,
     // passwordChangedAt: req.body.passwordChangedAt,
   });
 
@@ -189,10 +189,10 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   // User.findByIdAndUpdate won't work as expected
 
   // 2) Check if the posted password is correct
-  console.log(req.body.passwordCurrent);
-  console.log(
-    await user.isCorrectPassword(req.body.passwordCurrent, user.password),
-  );
+  // console.log(req.body.passwordCurrent);
+  // console.log(
+  //   await user.isCorrectPassword(req.body.passwordCurrent, user.password),
+  // );
   if (
     !(await user.isCorrectPassword(req.body.passwordCurrent, user.password))
   ) {
