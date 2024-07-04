@@ -54,6 +54,13 @@ userSchema.pre('save', async function (next) {
   this.passwordConfirm = undefined; // to not to save it in DB as we do only neec it for validation
   next();
 });
+userSchema.pre('save', function (next) {
+  //  To only run if password is modified
+  if (!this.isModified('password') || this.isNew) return next();
+
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
 // Instance methods : are methods that is gonna be available on all docs of the collection
 // to check the password for the login functionality
 userSchema.methods.isCorrectPassword = async function (
@@ -71,7 +78,7 @@ userSchema.methods.createPasswordResetToken = function () {
     .update(resetToken)
     .digest('hex');
 
-  console.log({ resetToken }, this.passwordResetToken);
+  // console.log({ resetToken }, this.passwordResetToken);
 
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
 
