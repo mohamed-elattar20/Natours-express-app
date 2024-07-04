@@ -43,6 +43,11 @@ const userSchema = new mongoose.Schema({
   photo: String,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
   // passwordChangedAt: Date,
 });
 
@@ -98,6 +103,12 @@ userSchema.methods.changedPasswordAfterTokenWasSent = function (jwtTimestamp) {
   }
   return false;
 };
+
+// Query Middleware for not getting a user with the active property set to false
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
+  next();
+});
 
 const User = mongoose.model('User', userSchema);
 
