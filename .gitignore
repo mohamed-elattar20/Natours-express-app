@@ -3,3 +3,6 @@ node_modules/
 
 # Package managers
 package-lock.json
+
+# Environment variables
+.env
