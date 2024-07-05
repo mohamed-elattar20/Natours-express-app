@@ -6,6 +6,9 @@ const AppError = require('./utils/appError');
 const globalErrorhandler = require('./controllers/errorController');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const hpp = require('hpp');
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -36,6 +39,27 @@ app.use(
   express.json({
     // will limit the body the user sends to be less than 10kb
     limit: '10kb',
+  }),
+);
+
+// Data Sanitization against NoSQL query Injection
+app.use(mongoSanitize());
+
+// Data Sanitization against XSS (cross-site scripting attacks)
+app.use(xss());
+
+// Prevent parameter pollution
+app.use(
+  hpp({
+    whitelist: [
+      'ratingsQuantity',
+      'sort',
+      'duration',
+      'ratingsAverage',
+      'maxGroupSize',
+      'difficulty',
+      'price',
+    ],
   }),
 );
 
