@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const slugify = require('slugify');
 // const validator = require('validator');
+// const User = require('./userModel');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -103,6 +104,13 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
+    //  Child Refrencing (tours is the parent and guides is the child)
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     toJSON: { virtuals: true }, //for each time data outputted as json make the virtuals appear
@@ -132,6 +140,17 @@ tourSchema.pre('save', function (next) {
 //   next();
 // });
 
+// ********* JUST FOR EXPERIMENT BEACUSE WE WILL USE DOCUMENT REFRENCING INSTEAD
+// tourSchema.pre('save', async function (next) {
+//   const guidesPromises = await this.guides.map(
+//     async (id) => await User.findById(id),
+//   );
+
+//   this.guides = await Promise.all(guidesPromises);
+//   next();
+// });
+// ********* JUST FOR EXPERIMENT BEACUSE WE WILL USE DOCUMENT REFRENCING INSTEAD
+
 ///////// QUERY MIDDLEWARE
 tourSchema.pre(/^find/, function (next) {
   // console.log(this); // will refer to the currently processed query
@@ -144,6 +163,15 @@ tourSchema.pre(/^find/, function (next) {
 //   // console.log(docs);
 //   next();
 // });
+
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
+
+  next();
+});
 
 ///////// AGGREGATION MIDDLEWARE
 tourSchema.pre('aggregate', function (next) {

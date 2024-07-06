@@ -48,7 +48,7 @@ const userSchema = new mongoose.Schema({
     default: true,
     select: false,
   },
-  // passwordChangedAt: Date,
+  passwordChangedAt: Date,
 });
 
 userSchema.pre('save', async function (next) {
