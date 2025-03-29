@@ -10,7 +10,7 @@ const tourSchema = new mongoose.Schema(
       type: String,
       required: [true, 'A tour must have a name'],
       default: 'mohamed khaled',
-      unique: true,
+      unique: true, // to not have two tours with the same name
       trim: true, // only works For a string
       maxLength: [40, 'A tour must have less than or equal to 40 character'],
       minLength: [10, 'A tour must have more than or equal to 10 character'],
@@ -48,7 +48,7 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       validate: {
         validator: function (priceDiscountVal) {
-          // this keyword only points to current doc on new doc creation
+          // this keyword only points to current doc on new doc creatio and won't work for update
           return priceDiscountVal < this.price;
         },
         message: 'Discount price ({VALUE}) must be less than regular price',
@@ -68,7 +68,7 @@ const tourSchema = new mongoose.Schema(
       required: [true, 'A tour must have a cover image'],
     },
     images: {
-      type: [String],
+      type: [String], // to define it's type as an array of strings
     },
     createdAt: {
       type: Date,

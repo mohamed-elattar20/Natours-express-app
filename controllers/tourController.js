@@ -81,11 +81,14 @@ exports.deleteTour = catchAsync(async (req, res, next) => {
   });
 });
 
+// Aggregation pipeline
 exports.getTourStats = catchAsync(async (req, res, next) => {
   const stats = await Tour.aggregate([
+    // 1) first stage ( match stage )
     {
       $match: { ratingsAverage: { $gte: 4.5 } },
     },
+    // 2) second stage ( group stage )
     {
       $group: {
         // _id: null,
@@ -99,6 +102,7 @@ exports.getTourStats = catchAsync(async (req, res, next) => {
         maxPrice: { $max: '$price' },
       },
     },
+    // 3) Third stage ( sort stage )
     { $sort: { avgPrice: 1 } },
     // { $match: { _id: { $ne: 'EASY' } } },  //We Can repeat the cycle of stages again
   ]);
