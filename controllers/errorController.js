@@ -55,6 +55,7 @@ const sendErrorProd = (err, res) => {
   }
 };
 
+// globalErrorHandler Middleware
 module.exports = (err, req, res, next) => {
   // console.log(err.stack);
 
@@ -73,8 +74,6 @@ module.exports = (err, req, res, next) => {
 
     if (error.name === 'ValidationError')
       error = handleValidationErrorDB(error);
-
-    if (error.name === 'JsonWebTokenError') error = handleJwtError(error);
 
     if (error.name === 'JsonWebTokenError') error = handleJwtError();
 
