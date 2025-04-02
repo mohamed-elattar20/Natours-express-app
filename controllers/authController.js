@@ -101,7 +101,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   if (!currentUser)
     return next(
-      new AppError('user belonging to this token does no lnoger exist.', 401),
+      new AppError('user belonging to this token does no longer exist.', 401),
     );
   // 4) Check if user changed password after the jwt token was issued
 
@@ -215,7 +215,8 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   // 3) If pass is correct , then update the password
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
-  await user.save();
+  await user.save(); // we used here .save() method as we want the validator of passwordConfirm
+  //  to run whenever the password is changed and this validator only runs on the .save() method
   // 4) Log in the user , send JWT
   createSendToken(user, 200, res);
 });

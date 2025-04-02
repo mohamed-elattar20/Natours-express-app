@@ -8,6 +8,7 @@ const bcrypt = require('bcryptjs');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
+    // required means a "Required input" but not required to be saved in database
     required: [true, 'Please insert your name!'],
   },
   email: {
@@ -52,7 +53,8 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.pre('save', async function (next) {
-  //  To only run if password is modified
+  //  To only run if password is modified ( updated or created a new password )
+  // isModified is a method for all documents and takes the field name as an argument
   if (!this.isModified('password')) return next();
 
   this.password = await bcrypt.hash(this.password, 12);
@@ -69,8 +71,9 @@ userSchema.pre('save', function (next) {
 // Instance methods : are methods that is gonna be available on all docs of the collection
 // to check the password for the login functionality
 userSchema.methods.isCorrectPassword = async function (
-  inputPassword,
-  userPassword,
+  // we are sending passwords as arguments as we set the select of password from DB to "false" so this.password here would'nt be available
+  inputPassword, // req.body.password
+  userPassword, // password from DB
 ) {
   return await bcrypt.compare(inputPassword, userPassword); // returns true or false
 };
