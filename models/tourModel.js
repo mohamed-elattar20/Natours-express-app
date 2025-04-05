@@ -9,7 +9,6 @@ const tourSchema = new mongoose.Schema(
     name: {
       type: String,
       required: [true, 'A tour must have a name'],
-      default: 'mohamed khaled',
       unique: true, // to not have two tours with the same name
       trim: true, // only works For a string
       maxLength: [40, 'A tour must have less than or equal to 40 character'],
@@ -80,6 +79,7 @@ const tourSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    // embedded document
     startLocation: {
       //  GeoJSON
       type: {
@@ -91,6 +91,7 @@ const tourSchema = new mongoose.Schema(
       address: String,
       description: String,
     },
+    // an array of embedded documents
     locations: [
       {
         type: {
@@ -123,6 +124,14 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
+// ******* Virtual populate ******* //
+// this is used to populate the data of the reviews in the tour data when we query for the tours
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
 ///////// DOCUMENT MIDDLEWARE : runs before .save() , .create() but not .insertMany()
 tourSchema.pre('save', function (next) {
   // console.log(this);
@@ -140,7 +149,7 @@ tourSchema.pre('save', function (next) {
 //   next();
 // });
 
-// ********* JUST FOR EXPERIMENT BEACUSE WE WILL USE DOCUMENT REFRENCING INSTEAD
+// ********* JUST FOR EXPERIMENT BEACUSE WE WILL USE DOCUMENT REFRENCING INSTEAD of embedded documents
 // tourSchema.pre('save', async function (next) {
 //   const guidesPromises = await this.guides.map(
 //     async (id) => await User.findById(id),
@@ -164,6 +173,7 @@ tourSchema.pre(/^find/, function (next) {
 //   next();
 // });
 
+// to get the data of the guides in the tour data when we query the tours
 tourSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'guides',

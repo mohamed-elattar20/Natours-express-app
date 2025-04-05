@@ -38,10 +38,15 @@ reviewSchema.pre(/^find/, function (next) {
   this.populate({
     path: 'user',
     select: 'name photo -_id',
-  }).populate({
-    path: 'tour',
-    select: 'name',
   });
+  // we won't need to populate the tour data in the review data because we will be getting the review data from the tour model when we query for a specific tour in the tour model
+  // this.populate({
+  //   path: 'user',
+  //   select: 'name photo -_id',
+  // }).populate({
+  //   path: 'tour',
+  //   select: 'name',
+  // });
 
   next();
 });
