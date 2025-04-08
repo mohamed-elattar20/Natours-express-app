@@ -14,16 +14,8 @@ const filterObj = (obj, ...allowedFields) => {
   return newObj;
 };
 
-exports.getAllUsers = catchAsync(async (req, res) => {
-  const users = await User.find();
+exports.getAllUsers = factory.getAll(User);
 
-  // Send Response
-  res.status(200).json({
-    status: 'success',
-    results: users.length,
-    data: { users },
-  });
-});
 exports.createUser = (req, res) => {
   try {
     res.status(200).json({
@@ -38,20 +30,7 @@ exports.createUser = (req, res) => {
     });
   }
 };
-exports.getUserById = (req, res) => {
-  try {
-    res.status(200).json({
-      status: 'success',
-      results: 10,
-      data: 'Users',
-    });
-  } catch (error) {
-    res.status(404).json({
-      status: 'failed',
-      message: 'err',
-    });
-  }
-};
+exports.getUserById = factory.getOne(User);
 
 // For the user himsel to update just specfic parts of his data (name , email)
 exports.updateMe = catchAsync(async (req, res, next) => {
