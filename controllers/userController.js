@@ -82,13 +82,9 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
-// For Admin to update all the user's data
-exports.updateUser = catchAsync(async (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    data: 'Users',
-  });
-});
+// For only Admin to update all the user's data
+// we don't update password with this as findByIdAndUpdate doesn't run the save middleware
+exports.updateUser = factory.updateOne(User);
 
 //  function to delete or in another meaning to deactive my account (normal user's account)
 exports.deleteMe = catchAsync(async (req, res, next) => {

@@ -15,17 +15,14 @@ exports.getAllReviews = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.createReview = catchAsync(async (req, res, next) => {
+exports.setTourAndUserIds = (req, res, next) => {
   // Allow nested routes
-  // this is to make sure that the tour id is passed in the body of the request
   if (!req.body.tour) req.body.tour = req.params.tourId;
-  if (!req.body.user) req.body.user = req.user.id; // from the protect middleware
-  const newReview = await Review.create(req.body);
+  if (!req.body.user) req.body.user = req.user.id; // req.user is set in the auth middleware
 
-  res.status(200).json({
-    status: 'success',
-    data: { review: newReview },
-  });
-});
+  next();
+};
 
+exports.createReview = factory.createOne(Review);
+exports.updateReview = factory.updateOne(Review);
 exports.deleteReview = factory.deleteOne(Review);
