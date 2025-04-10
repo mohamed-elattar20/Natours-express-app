@@ -119,6 +119,11 @@ const tourSchema = new mongoose.Schema(
   },
 );
 
+// to create an index on the price field and ratingsAverage field
+// this is used to make the query faster when we search for the tours by price and ratingsAverage
+tourSchema.index({ price: 1, ratingsAverage: -1 }); // 1 for ascending and -1 for descending order
+tourSchema.index({ slug: 1 });
+
 ///////// virtual property that won't be saved in DB but will be outputted to user with the data
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;

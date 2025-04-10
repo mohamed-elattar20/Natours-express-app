@@ -78,6 +78,7 @@ exports.getAll = (Model) =>
       .sort()
       .limitFields()
       .paginate();
+    // const doc = await features.query.explain(); // to get the query execution time
     const doc = await features.query;
 
     // Send Response
