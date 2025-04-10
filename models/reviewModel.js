@@ -34,6 +34,9 @@ const reviewSchema = new mongoose.Schema(
   },
 );
 
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true }); // to make sure that a user can only leave one review for a tour
+// this is a compound index, which means that both tour and user must be unique together, not individually
+
 // QUERY MIDDLEWARE
 reviewSchema.pre(/^find/, function (next) {
   this.populate({
@@ -96,7 +99,7 @@ reviewSchema.pre(/^findOneAnd/, async function (next) {
   next();
 });
 
-reviewSchema.post(/^findOneAnd/, async function (doc) {
+reviewSchema.post(/^findOneAnd/, async function () {
   // await this.findOne(); // doesn't work here, query has already executed ( as we are using post middleware )
   // this points to current query
   await this.rev.constructor.calcAverageRatings(this.rev.tour);
