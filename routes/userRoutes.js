@@ -12,15 +12,20 @@ router.post('/login', authController.login);
 router.post('/forgotPassword', authController.forgotPassword);
 // will recieve the token in addition to the new password
 router.patch('/resetPassword/:token', authController.resetPassword);
-router.patch(
-  '/updateMyPassword',
-  authController.protect,
-  authController.updatePassword,
-);
-router.patch('/updateMe', authController.protect, userController.updateMe);
+
+// this will protect all the routes after this line
+// so we don't need to repeat the same code in each route
+router.use(authController.protect);
+
+router.patch('/updateMyPassword', authController.updatePassword);
+
+router.get('/me', userController.getMe, userController.getUserById);
+router.patch('/updateMe', userController.getMe, userController.getUserById);
 // actually we are not deleting the user we just set the active property to false
 // so if the user needed to active his account again
-router.delete('/deleteMe', authController.protect, userController.deleteMe);
+router.delete('/deleteMe', userController.deleteMe);
+
+router.use(authController.restrictTo('admin'));
 
 router
   .route('/')

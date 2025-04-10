@@ -68,6 +68,7 @@ userSchema.pre('save', function (next) {
   this.passwordChangedAt = Date.now() - 1000;
   next();
 });
+
 // Instance methods : are methods that is gonna be available on all docs of the collection
 // to check the password for the login functionality
 userSchema.methods.isCorrectPassword = async function (
