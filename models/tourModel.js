@@ -125,6 +125,7 @@ const tourSchema = new mongoose.Schema(
 // this is used to make the query faster when we search for the tours by price and ratingsAverage
 tourSchema.index({ price: 1, ratingsAverage: -1 }); // 1 for ascending and -1 for descending order
 tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' }); // to create a 2d index on the startLocation field
 
 ///////// virtual property that won't be saved in DB but will be outputted to user with the data
 tourSchema.virtual('durationWeeks').get(function () {
@@ -191,11 +192,12 @@ tourSchema.pre(/^find/, function (next) {
 });
 
 ///////// AGGREGATION MIDDLEWARE
-tourSchema.pre('aggregate', function (next) {
-  // console.log(this.pipeline()); // points to the current aggregate Objcet
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-  next();
-});
+// tourSchema.pre('aggregate', function (next) {
+//   // console.log(this.pipeline()); // points to the current aggregate Objcet
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } }); // to add a match stage to the beginning of the pipeline
+//   next();
+// });
+
 const Tour = mongoose.model('Tour', tourSchema);
 
 module.exports = Tour;
