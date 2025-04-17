@@ -46,22 +46,23 @@ const upload = multer({
 // single file upload with the name 'photo' which is the field name in DB
 exports.uploadUserPhoto = upload.single('photo'); // this will create a file object in the req.file
 
-exports.resizeUserPhoto = (req, res, next) => {
+exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
   // if there is no file in the request, we don't need to resize it
   if (!req.file) return next(); // this will skip the middleware
 
-  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`; // this will create a unique name for the file by using the current time and the original file name
+  // this will create a unique name for the file by using the current time and the original file name
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
 
   // this will convert the image to a buffer and resize it to 500x500 and save it in the public/img/users folder and configure
   // the quality to 90% and the format to jpeg
-  sharp(req.file.buffer)
+  await sharp(req.file.buffer)
     .resize(500, 500)
     .toFormat('jpeg')
     .jpeg({ quality: 90 })
     .toFile(`public/img/users/${req.file.filename}.jpeg`); // this will save the file in the public/img/users folder
 
   next();
-};
+});
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};

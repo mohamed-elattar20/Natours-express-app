@@ -1,7 +1,73 @@
+const multer = require('multer');
+const sharp = require('sharp');
 const Tour = require('../models/tourModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
+
+const multerStorage = multer.memoryStorage(); // this will store the file in memory as a buffer
+
+// this function's goal is to test if the file is an image or not
+const multerFilter = (req, file, callBackFunc) => {
+  // check if the file is an image or not
+  if (file.mimetype.startsWith('image')) {
+    callBackFunc(null, true); // passing true will allow the file to be saved
+  } else {
+    callBackFunc(
+      new AppError('Not an image! Please upload only images', 400),
+      false,
+    ); // passing an error and false will not allow the file to be saved
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+exports.resizeTourImages = catchAsync(async (req, res, next) => {
+  // if there is no file in the request, we don't need to resize it
+  if (!req.files.imageCover || !req.files.images) return next(); // this will skip the middleware
+
+  // 1) cover image
+  // this will create a unique name for the file by using the current time and the original file name
+  req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
+
+  await sharp(req.files.imageCover[0].buffer)
+    .resize(2000, 1333)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/tours/${req.body.imageCover}`);
+
+  // 2) images
+  req.body.images = [];
+
+  // this will convert the image to a buffer and resize it to 500x500 and save it in the public/img/users folder and configure
+  // the quality to 90% and the format to jpeg
+  // we used the map function to loop over the images and return an array of promises as if we used forEach it will not return an array of promises and then the next function will not wait for the promises to be resolved
+  // so we used Promise.all to wait for all the promises to be resolved before moving to the next function
+  await Promise.all(
+    req.files.images.map(async (file, i) => {
+      const filename = `tour-${req.params.id}-${Date.now()}-${i + 1}.jpeg`;
+      await sharp(file.buffer)
+        .resize(2000, 1333)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(`public/img/tours/${filename}`);
+
+      req.body.images.push(filename);
+    }),
+  );
+
+  next();
+});
+
+// the file will be available in req.file
+// single file upload with the name 'photo' which is the field name in DB
+exports.uploadTourImages = upload.fields([
+  { name: 'imageCover', maxCount: 1 },
+  { name: 'images', maxCount: 3 },
+]);
 
 // Middleware to get the top 5 cheapest tours
 exports.aliasTopToursMiddleware = (req, res, next) => {
