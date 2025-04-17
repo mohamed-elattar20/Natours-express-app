@@ -41,7 +41,10 @@ const userSchema = new mongoose.Schema({
       message: 'you entered a wrong password',
     },
   },
-  photo: String,
+  photo: {
+    type: String,
+    default: 'default.jpg',
+  },
   passwordResetToken: String,
   passwordResetExpires: Date,
   active: {

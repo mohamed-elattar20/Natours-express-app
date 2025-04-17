@@ -20,7 +20,12 @@ router.use(authController.protect);
 router.patch('/updateMyPassword', authController.updatePassword);
 
 router.get('/me', userController.getMe, userController.getUserById);
-router.patch('/updateMe', userController.getMe, userController.getUserById);
+router.patch(
+  '/updateMe',
+  userController.uploadUserPhoto,
+  userController.resizeUserPhoto,
+  userController.updateMe,
+);
 // actually we are not deleting the user we just set the active property to false
 // so if the user needed to active his account again
 router.delete('/deleteMe', userController.deleteMe);
