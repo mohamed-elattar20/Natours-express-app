@@ -10,6 +10,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
+const compression = require('compression');
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -69,6 +70,8 @@ app.use(
 
 // Serving Static files
 app.use(express.static(`${__dirname}/public`));
+
+app.use(compression()); // Compressing the response to make it smaller
 
 // Test middleware
 app.use((req, res, next) => {
