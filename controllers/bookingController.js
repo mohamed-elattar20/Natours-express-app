@@ -72,6 +72,23 @@ exports.createBookingCheckout = catchAsync(async (req, res, next) => {
   res.redirect(req.originalUrl.split('?')[0]);
 });
 
+// Middleware to check if the user has booked the tour
+exports.restrictToBookedUsers = catchAsync(async (req, res, next) => {
+  const { tourId } = req.params;
+  const userId = req.user.id;
+
+  // Check if the user has a booking for the specified tour
+  const booking = await Booking.findOne({ tour: tourId, user: userId });
+
+  if (!booking) {
+    return next(
+      new AppError('You can only review tours you have booked.', 403),
+    );
+  }
+
+  next();
+});
+
 exports.getAllBookings = factory.getAll(Booking);
 exports.getBooking = factory.getOne(Booking);
 exports.createBooking = factory.createOne(Booking);

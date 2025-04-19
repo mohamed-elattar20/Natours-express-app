@@ -2,6 +2,7 @@ const express = require('express');
 
 const reviewController = require('../controllers/reviewController');
 const authController = require('../controllers/authController');
+const bookingController = require('../controllers/bookingController');
 
 const router = express.Router({
   // this will allow us to use the tourId param in the review routes as well which is passed in the url in tourRoutes
@@ -14,6 +15,7 @@ router
   .route('/')
   .get(reviewController.getAllReviews)
   .post(
+    bookingController.restrictToBookedUsers,
     authController.restrictTo('user'),
     reviewController.setTourAndUserIds,
     reviewController.createReview,
