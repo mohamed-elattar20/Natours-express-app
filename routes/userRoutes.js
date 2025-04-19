@@ -2,6 +2,7 @@ const express = require('express');
 
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
+const bookingRouter = require('./bookingRoutes');
 
 const router = express.Router();
 
@@ -29,6 +30,8 @@ router.patch(
 // actually we are not deleting the user we just set the active property to false
 // so if the user needed to active his account again
 router.delete('/deleteMe', userController.deleteMe);
+
+router.use('/:userId/bookings', bookingRouter);
 
 router.use(authController.restrictTo('admin'));
 

@@ -89,6 +89,14 @@ exports.restrictToBookedUsers = catchAsync(async (req, res, next) => {
   next();
 });
 
+exports.setToursAndUserIds = (req, res, next) => {
+  // Allow nested routes
+  if (!req.body.tour) req.body.tour = req.params.tourId;
+  if (!req.body.user) req.body.user = req.user.id; // logged in user
+
+  next();
+};
+
 exports.getAllBookings = factory.getAll(Booking);
 exports.getBooking = factory.getOne(Booking);
 exports.createBooking = factory.createOne(Booking);

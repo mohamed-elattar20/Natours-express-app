@@ -3,12 +3,14 @@ const express = require('express');
 const tourController = require('../controllers/tourController');
 const authController = require('../controllers/authController');
 const reviewRouter = require('./reviewRoutes');
+const bookingRouter = require('./bookingRoutes');
 
 const router = express.Router();
 
 // Nested routes for reviews, this will hit tours at first and then hit this url and get directed to the review router
 // this is a better way to do it as we don't need to repeat the same code in the review router
 router.use('/:tourId/reviews', reviewRouter);
+router.use('/:tourId/bookings', bookingRouter);
 
 // Middleware for the id param to check it we don't need it at id as the database will do this
 // but we will need it for any other param might be sent in request
