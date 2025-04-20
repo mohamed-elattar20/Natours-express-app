@@ -11,6 +11,7 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 const compression = require('compression');
+const cors = require('cors'); // for cross-origin resource sharing
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -22,6 +23,13 @@ const app = express();
 app.enable('trust proxy'); // for rate limiting to work on heroku
 
 // Global middlewares
+// this will only work for simple requests like GET, POST
+app.use(cors()); // Allow Cross-Origin Resource Sharing (CORS)
+// Allow only this domain to access the API this will work if frontend is hosted on natours.com and backend on api.natours.com
+// app.use(cors({ origin: 'https://www.natours.com' }));
+app.options('*', cors()); // Pre-flight request for all routes
+// this will work for complex requests like PUT, DELETE, PATCH
+// app.options('/api/v1/tours/:id', cors()); // Pre-flight request for specific route
 
 // Set Security Http Headers
 app.use(helmet());
