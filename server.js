@@ -51,3 +51,12 @@ process.on('unhandledRejection', (err) => {
     process.exit(1);
   });
 });
+
+// this is for graceful shutdown of the server
+// it will close the server and then exit the process
+process.on('SIGTERM', () => {
+  console.log('SIGTERM RECEIVED. Shutting down gracefully...');
+  server.close(() => {
+    console.log('Process terminated! 💥');
+  });
+});
