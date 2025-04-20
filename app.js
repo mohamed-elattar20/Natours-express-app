@@ -19,6 +19,8 @@ const bookingRouter = require('./routes/bookingRoutes');
 
 const app = express();
 
+app.enable('trust proxy'); // for rate limiting to work on heroku
+
 // Global middlewares
 
 // Set Security Http Headers

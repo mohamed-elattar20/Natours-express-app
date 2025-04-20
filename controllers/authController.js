@@ -12,7 +12,7 @@ const signToken = (userId) =>
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
   const cookieOptions = {
     expires: new Date(
@@ -20,6 +20,7 @@ const createSendToken = (user, statusCode, res) => {
     ),
     // only set to true in production for https protocol
     httpOnly: true,
+    secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
   };
 
   if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
@@ -52,7 +53,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     `${req.protocol}://${req.get('host')}/me`,
   ).sendWelcome();
 
-  createSendToken(newUser, 201, res);
+  createSendToken(newUser, 201, req, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -72,7 +73,7 @@ exports.login = catchAsync(async (req, res, next) => {
     );
 
   // 3) if everything is ok, send token to client
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 
 // Protected route
@@ -192,7 +193,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   //  in a middleware in userModel.js in Line 57
 
   // 4) Log the user in , send JWT
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
@@ -217,5 +218,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   await user.save(); // we used here .save() method as we want the validator of passwordConfirm
   //  to run whenever the password is changed and this validator only runs on the .save() method
   // 4) Log in the user , send JWT
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
