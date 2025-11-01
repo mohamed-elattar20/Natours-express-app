@@ -45,8 +45,9 @@ exports.signup = catchAsync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     role: req.body.role,
+    //  these two should not be set by the user directly and should be handled in the controller and removed from here
     // passwordCurrent: req.body.passwordCurrent,
-    passwordChangedAt: req.body.passwordChangedAt,
+    // passwordChangedAt: req.body.passwordChangedAt,
   });
   await new Email(
     newUser,

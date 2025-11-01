@@ -65,7 +65,9 @@ userSchema.pre('save', async function (next) {
   next();
 });
 userSchema.pre('save', function (next) {
+  // this here points to the current document
   //  To only run if password is modified
+  // this.isNew is to check if the document is newly created or not.
   if (!this.isModified('password') || this.isNew) return next();
 
   this.passwordChangedAt = Date.now() - 1000;
